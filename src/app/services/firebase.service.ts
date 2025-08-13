@@ -66,4 +66,22 @@ deleteItemInList(listId: string, id: string) {
     `${this.base}/users/demoUser/itemsByList/${listId}/${id}.json`
   );
 }
+
+// PREIMENUJ LISTU
+renameList(listId: string, newName: string) {
+  return this.http.patch(
+    `${this.base}/users/demoUser/lists/${listId}.json`,
+    { name: newName }
+  );
+}
+
+// OBRIŠI LISTU + SVE NJENE STAVKE
+deleteListAndItems(listId: string) {
+  // obriši listu
+  const delList = this.http.delete(`${this.base}/users/demoUser/lists/${listId}.json`);
+  // obriši sve stavke iz te liste
+  const delItems = this.http.delete(`${this.base}/users/demoUser/itemsByList/${listId}.json`);
+  // najjednostavnije: pokreni oba poziva (frontend “fire & forget”)
+  return { delList, delItems };
+}
 }

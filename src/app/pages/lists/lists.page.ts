@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FirebaseService } from '../../services/firebase.service';
+import { AlertController } from '@ionic/angular';
+
 
 type ShoppingList = { id: string; name: string };
 
@@ -40,4 +42,47 @@ export class ListsPage {
   open(l: ShoppingList) {
     this.router.navigate(['/list', l.id, l.name]);
   }
+
+  private alert = inject(AlertController);
+
+async rename(l: ShoppingList) {
+  const a = await this.alert.create({
+    header: 'Preimenuj listu',
+    inputs: [{ name: 'name', type: 'text', value: l.name, placeholder: 'Naziv liste' }],
+    buttons: [
+      { text: 'Otkaži', role: 'cancel' },
+      {
+        text: 'Sačuvaj',
+        handler: async (data) => {
+          const name = (data?.name || '').trim();
+          if (!name) return false; // spreči zatvaranje ako je prazno
+          await this.fb.renameList(l.id, name).toPromise();
+          l.name = name;
+          return true; // 👈 dodaj ovo
+        }
+      }
+    ]
+  });
+  await a.present();
+}
+
+async remove(l: ShoppingList) {
+  const a = await this.alert.create({
+    header: 'Obriši listu?',
+    message: `Obriši "${l.name}" i sve stavke unutar nje.`,
+    buttons: [
+      { text: 'Ne', role: 'cancel' },
+      {
+        text: 'Da, obriši',
+        role: 'destructive',
+        handler: async () => {
+          const { delList, delItems } = this.fb.deleteListAndItems(l.id);
+          await Promise.all([delList.toPromise(), delItems.toPromise()]);
+          this.lists = this.lists.filter(x => x.id !== l.id);
+        }
+      }
+    ]
+  });
+  await a.present();
+}
 }

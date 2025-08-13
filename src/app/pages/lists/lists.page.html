@@ -13,8 +13,13 @@
   </form>
 
   <ion-list>
-    <ion-item *ngFor="let l of lists" (click)="open(l)">
+  <ion-item-sliding *ngFor="let l of lists">
+    <ion-item (click)="open(l)">
       <ion-label>{{ l.name }}</ion-label>
     </ion-item>
-  </ion-list>
-</ion-content>
+    <ion-item-options side="end">
+      <ion-item-option (click)="rename(l)">Preimenuj</ion-item-option>
+      <ion-item-option color="danger" (click)="remove(l)">Obriši</ion-item-option>
+    </ion-item-options>
+  </ion-item-sliding>
+</ion-list>
