@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FirebaseService } from '../../services/firebase.service';
+import { AlertController } from '@ionic/angular';
 
 type ShoppingItem = { id: string; name: string; qty?: number; purchased: boolean };
 
@@ -19,6 +20,8 @@ export class ListDetailPage {
 
   private route = inject(ActivatedRoute);
   private fb = inject(FirebaseService);
+  private alert = inject(AlertController);
+
 
   listId = '';
 listName = '';
@@ -77,4 +80,38 @@ async removeItem(it: ShoppingItem): Promise<void> {
   } catch {
     this.present('Greška pri brisanju.');
   }
-}}
+}
+
+async edit(it: ShoppingItem): Promise<void> {
+  const a = await this.alert.create({
+    header: 'Izmena stavke',
+    inputs: [
+      { name: 'name', type: 'text', value: it.name, placeholder: 'Naziv' },
+      { name: 'qty',  type: 'number', value: it.qty ?? '', placeholder: 'Količina (opciono)' },
+    ],
+    buttons: [
+      { text: 'Otkaži', role: 'cancel' },
+      {
+        text: 'Sačuvaj',
+        handler: async (data) => {
+          const name = (data?.name || '').trim();
+          const qtyRaw = (data?.qty ?? '').toString().trim();
+          const qty = qtyRaw === '' ? undefined : Number(qtyRaw);
+          if (!name) return false; // blokiraj prazno ime
+
+          try {
+            await this.fb.updateItemInList(this.listId, it.id, { name, qty }).toPromise();
+            it.name = name;
+            it.qty = qty;
+            this.present('Stavka izmenjena.');
+          } catch {
+            this.present('Greška pri izmeni.');
+          }
+          return true;
+        }
+      }
+    ]
+  });
+  await a.present();
+}
+}

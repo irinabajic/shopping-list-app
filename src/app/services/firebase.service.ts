@@ -84,4 +84,11 @@ deleteListAndItems(listId: string) {
   // najjednostavnije: pokreni oba poziva (frontend “fire & forget”)
   return { delList, delItems };
 }
+
+updateItemInList(listId: string, id: string, patch: { name?: string; qty?: number }) {
+  return this.http.patch(
+    `${this.base}/users/demoUser/itemsByList/${listId}/${id}.json`,
+    patch
+  );
+}
 }

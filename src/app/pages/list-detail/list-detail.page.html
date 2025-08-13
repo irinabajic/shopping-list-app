@@ -16,14 +16,21 @@
   </form>
 
   <ion-list>
-    <ion-item *ngFor="let it of items">
+  <ion-item-sliding *ngFor="let it of items">
+    <ion-item>
       <ion-label>
         <h2 [style.textDecoration]="it.purchased ? 'line-through' : 'none'">
           {{ it.name }} <ng-container *ngIf="it.qty">({{ it.qty }})</ng-container>
         </h2>
       </ion-label>
-      <ion-button fill="clear" (click)="togglePurchased(it)">{{ it.purchased ? 'Vrati' : 'Kupljeno' }}</ion-button>
-      <ion-button fill="clear" color="danger" (click)="removeItem(it)">Obriši</ion-button>
+      <ion-button fill="clear" (click)="togglePurchased(it)">
+        {{ it.purchased ? 'Vrati' : 'Kupljeno' }}
+      </ion-button>
     </ion-item>
-  </ion-list>
+    <ion-item-options side="end">
+      <ion-item-option (click)="edit(it)">Izmeni</ion-item-option>
+      <ion-item-option color="danger" (click)="removeItem(it)">Obriši</ion-item-option>
+    </ion-item-options>
+  </ion-item-sliding>
+</ion-list>
 </ion-content>
