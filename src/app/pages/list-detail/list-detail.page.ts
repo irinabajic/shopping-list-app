@@ -3,6 +3,7 @@ import { IonicModule, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FirebaseService } from '../../services/firebase.service';
 
 type ShoppingItem = { id: string; name: string; qty?: number; purchased: boolean };
@@ -16,20 +17,24 @@ type ShoppingItem = { id: string; name: string; qty?: number; purchased: boolean
 export class ListDetailPage {
   constructor(private toast: ToastController) {}
 
+  private route = inject(ActivatedRoute);
   private fb = inject(FirebaseService);
+
+  listId = '';
+listName = '';
 
   newItemName = '';
   newItemQty?: number;
   items: ShoppingItem[] = [];
 
-  ionViewWillEnter() {
-  this.fb.getItems().subscribe(res => {
+ ionViewWillEnter() {
+  this.listId = this.route.snapshot.paramMap.get('id') || '';
+  this.listName = this.route.snapshot.paramMap.get('name') || '';
+
+  this.fb.getItemsByList(this.listId).subscribe(res => {
     this.items = res
       ? Object.entries(res).map(([id, v]: [string, any]) => ({
-          id,
-          name: v.name,
-          qty: v.qty,
-          purchased: !!v.purchased
+          id, name: v.name, qty: v.qty, purchased: !!v.purchased
         }))
       : [];
   });
@@ -45,30 +50,28 @@ export class ListDetailPage {
   if (!name) { this.present('Ne možete dodati praznu stavku.'); return; }
 
   try {
-    const resp = await this.fb.addItem(name, this.newItemQty).toPromise(); // { name: "<noviId>" }
+    const resp = await this.fb.addItemToList(this.listId, name, this.newItemQty).toPromise();
     const newId = resp!.name;
-    const it: ShoppingItem = { id: newId, name, qty: this.newItemQty || undefined, purchased: false };
-    this.items = [it, ...this.items];
-    this.newItemName = '';
-    this.newItemQty = undefined;
+    this.items = [{ id: newId, name, qty: this.newItemQty || undefined, purchased: false }, ...this.items];
+    this.newItemName = ''; this.newItemQty = undefined;
     this.present('Stavka dodata.');
   } catch {
     this.present('Greška pri dodavanju.');
   }
 }
 
-  async togglePurchased(it: ShoppingItem): Promise<void> {
+async togglePurchased(it: ShoppingItem): Promise<void> {
   try {
-    await this.fb.togglePurchased(it.id, !it.purchased).toPromise();
+    await this.fb.togglePurchasedInList(this.listId, it.id, !it.purchased).toPromise();
     it.purchased = !it.purchased;
   } catch {
     this.present('Greška pri označavanju.');
   }
 }
 
- async removeItem(it: ShoppingItem): Promise<void> {
+async removeItem(it: ShoppingItem): Promise<void> {
   try {
-    await this.fb.deleteItem(it.id).toPromise();
+    await this.fb.deleteItemInList(this.listId, it.id).toPromise();
     this.items = this.items.filter(x => x.id !== it.id);
     this.present('Stavka obrisana.');
   } catch {

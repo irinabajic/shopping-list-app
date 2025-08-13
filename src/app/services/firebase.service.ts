@@ -43,7 +43,7 @@ createList(name: string) {
   );
 }
 
-// Helper za stavke po listi:
+// ==== ITEMS PO LISTI ====
 getItemsByList(listId: string) {
   return this.http.get<Record<string, { name: string; qty?: number; purchased: boolean }> | null>(
     `${this.base}/users/demoUser/itemsByList/${listId}.json`
