@@ -91,4 +91,11 @@ updateItemInList(listId: string, id: string, patch: { name?: string; qty?: numbe
     patch
   );
 }
+
+deletePurchasedInList(listId: string, ids: string[]) {
+  // paralelno brišemo više stavki
+  return Promise.all(ids.map(id =>
+    this.http.delete(`${this.base}/users/demoUser/itemsByList/${listId}/${id}.json`).toPromise()
+  ));
+}
 }

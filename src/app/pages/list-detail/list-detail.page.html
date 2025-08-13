@@ -1,6 +1,9 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>{{ listName || 'Stavke' }}</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/lists"></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -14,6 +17,10 @@
     </ion-item>
     <ion-button expand="block" type="submit">Dodaj stavku</ion-button>
   </form>
+
+<ion-button expand="block" fill="outline" (click)="clearPurchased()">
+  Obriši sve kupljene
+</ion-button>
 
   <ion-list>
   <ion-item-sliding *ngFor="let it of items">

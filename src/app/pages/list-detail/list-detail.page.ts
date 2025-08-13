@@ -40,6 +40,7 @@ listName = '';
           id, name: v.name, qty: v.qty, purchased: !!v.purchased
         }))
       : [];
+      this.sortItems();
   });
 }
 
@@ -114,4 +115,27 @@ async edit(it: ShoppingItem): Promise<void> {
   });
   await a.present();
 }
+
+private sortItems() {
+  // nekupjene gore, kupljene dole; zadrži redosled unutar grupa
+  this.items = [
+    ...this.items.filter(i => !i.purchased),
+    ...this.items.filter(i => i.purchased)
+  ];
+}
+
+async clearPurchased(): Promise<void> {
+  const ids = this.items.filter(i => i.purchased).map(i => i.id);
+  if (!ids.length) { this.present('Nema kupljenih za brisanje.'); return; }
+
+  try {
+    await this.fb.deletePurchasedInList(this.listId, ids); // koristi helper iz servisa
+    this.items = this.items.filter(i => !i.purchased);
+    this.present('Kupljene stavke obrisane.');
+  } catch {
+    this.present('Greška pri brisanju kupljenih.');
+  }
+}
+
+
 }
