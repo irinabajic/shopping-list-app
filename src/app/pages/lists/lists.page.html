@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Moje liste</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form (ngSubmit)="addList()">
+    <ion-item>
+      <ion-input [(ngModel)]="newListName" name="newListName" placeholder="Naziv liste"></ion-input>
+    </ion-item>
+    <ion-button expand="block" type="submit">Dodaj listu</ion-button>
+  </form>
+
+  <ion-list>
+    <ion-item *ngFor="let l of lists" (click)="open(l)">
+      <ion-label>{{ l.name }}</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
