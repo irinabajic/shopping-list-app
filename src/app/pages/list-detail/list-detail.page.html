@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Stavke</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form (ngSubmit)="addItem()">
+    <ion-item>
+      <ion-input [(ngModel)]="newItemName" name="newItemName" placeholder="Nova stavka"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input [(ngModel)]="newItemQty" name="newItemQty" type="number" placeholder="Količina (opciono)"></ion-input>
+    </ion-item>
+    <ion-button expand="block" type="submit">Dodaj stavku</ion-button>
+  </form>
+
+  <ion-list>
+    <ion-item *ngFor="let it of items">
+      <ion-label>
+        <h2 [style.textDecoration]="it.purchased ? 'line-through' : 'none'">
+          {{ it.name }} <ng-container *ngIf="it.qty">({{ it.qty }})</ng-container>
+        </h2>
+      </ion-label>
+      <ion-button fill="clear" (click)="togglePurchased(it)">{{ it.purchased ? 'Vrati' : 'Kupljeno' }}</ion-button>
+      <ion-button fill="clear" color="danger" (click)="removeItem(it)">Obriši</ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>
