@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'lists',
+    redirectTo: 'start',
     pathMatch: 'full',
   },
   {
@@ -14,4 +14,17 @@ export const routes: Routes = [
     path: 'list/:id/:name',
     loadComponent: () => import('./pages/list-detail/list-detail.page').then(m => m.ListDetailPage),
   },
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/login/login.page').then( m => m.LoginPage)
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./pages/register/register.page').then( m => m.RegisterPage)
+  },
+  {
+    path: 'start',
+    loadComponent: () => import('./pages/start/start.page').then( m => m.StartPage)
+  },
+
 ];

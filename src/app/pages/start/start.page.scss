@@ -1,0 +1,11 @@
+.welcome {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  gap: 1rem;
+
+  .logo { font-size: 3rem; }
+  h1 { margin: 0 0 .75rem 0; font-weight: 700; }
+  .subtext { color: var(--ion-color-medium); }
+  .subtext a { margin-left: .35rem; text-decoration: none; font-weight: 600; }
+}
