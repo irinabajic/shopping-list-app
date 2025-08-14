@@ -1,68 +1,62 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { initializeApp } from 'firebase/app';
 import {
-  Auth,
+  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-} from '@angular/fire/auth';
+  onAuthStateChanged,
+  User
+} from 'firebase/auth';
+import { environment } from 'src/environments/environment';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private auth = inject(Auth);
+  private app = initializeApp(environment.firebase);
+  private auth = getAuth(this.app);
+  private currentUser: User | null = null;
 
-  // === VALIDACIJA EMAIL-a (zadržavamo tvoju proveru) ===
-  private validateEmail(email: string): boolean {
-    const re = /\S+@\S+\.\S+/;
-    return re.test(email);
+  constructor() {
+    // sluša promene stanja
+    onAuthStateChanged(this.auth, (user) => {
+      this.currentUser = user;
+    });
   }
-
-  // === REGISTRACIJA (Firebase Auth) ===
-  // Vraća true ako je prošlo, false ako nije (kao tvoja stara verzija), ali je sada ASINHRONO.
   async register(email: string, password: string): Promise<boolean> {
-    if (!this.validateEmail(email) || password.length < 6) {
-      return false;
-    }
     try {
       await createUserWithEmailAndPassword(this.auth, email, password);
       return true;
-    } catch {
-      // npr. ako email već postoji
+    } catch (err: any) {
+      console.error('Greška prilikom registracije:', err.code, err.message);
+      alert('Greška: ' + err.message); // privremeno za debug
       return false;
     }
   }
-
-  // === LOGIN (Firebase Auth) ===
   async login(email: string, password: string): Promise<boolean> {
     try {
       await signInWithEmailAndPassword(this.auth, email, password);
       return true;
-    } catch {
+    } catch (err) {
+      console.error('Greška pri logovanju:', err);
       return false;
     }
   }
 
-  // === LOGOUT ===
-  async logout(): Promise<void> {
-    await signOut(this.auth);
+  logout(): Promise<void> {
+    return signOut(this.auth);
   }
 
-  // === STATUS ===
   isLoggedIn(): boolean {
-    return !!this.auth.currentUser;
+    return this.currentUser !== null;
   }
 
-  // === Korisni dodaci za bazu (trebaće nam) ===
   uid(): string | null {
-    return this.auth.currentUser?.uid ?? null;
+    return this.currentUser ? this.currentUser.uid : null;
   }
 
-  /** Token za REST pozive ka Realtime DB: dodaje se kao ?auth=ID_TOKEN */
-  async idToken(): Promise<string> {
-    const u = this.auth.currentUser;
-    if (!u) throw new Error('Nema ulogovanog korisnika.');
-    return await u.getIdToken();
+  async idToken(): Promise<string | null> {
+    if (!this.currentUser) return null;
+    return await this.currentUser.getIdToken();
   }
 }
 

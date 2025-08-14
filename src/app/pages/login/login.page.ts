@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, AlertController } from '@ionic/angular';
+import { AuthService } from 'src/app/services/auth';
+import { FirebaseService } from 'src/app/services/firebase.service';
 
 @Component({
   selector: 'app-login',
@@ -15,23 +17,38 @@ export class LoginPage {
   email = '';
   password = '';
 
-  constructor(private router: Router, private alertCtrl: AlertController) {}
+  constructor(
+    private router: Router,
+    private alertCtrl: AlertController,
+    private auth: AuthService,
+    private firebase: FirebaseService
+  ) {}
 
   async login() {
-    const savedUser = localStorage.getItem('user');
-
-    if (!savedUser) {
-      await this.showAlert('Greška', 'Nema registrovanog korisnika. Registrujte se prvo.');
+    if (!this.email || !this.password) {
+      await this.showAlert('Greška', 'Sva polja su obavezna.');
       return;
     }
 
-    const parsedUser = JSON.parse(savedUser);
-
-    if (this.email === parsedUser.email && this.password === parsedUser.password) {
-      localStorage.setItem('isLoggedIn', 'true');
-      this.router.navigate(['/lists']);
-    } else {
+    const ok = await this.auth.login(this.email, this.password);
+    if (!ok) {
       await this.showAlert('Greška', 'Pogrešan email ili lozinka.');
+      return;
+    }
+
+    // Ako login uspe, proveri da li korisnik već ima liste
+    try {
+      const lists = await this.firebase.getLists();
+      if (!lists || Object.keys(lists).length === 0) {
+        // Ako nema lista, kreiraj podrazumevanu
+        await this.firebase.createList('Moja prva lista');
+      }
+
+      // Preusmeri na stranicu lists
+      this.router.navigate(['/lists']);
+    } catch (err) {
+      console.error(err);
+      await this.showAlert('Greška', 'Neuspešno učitavanje podataka.');
     }
   }
 
