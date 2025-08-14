@@ -35,7 +35,8 @@ export class LoginPage {
       await this.showAlert('Greška', 'Pogrešan email ili lozinka.');
       return;
     }
-
+     localStorage.setItem('user', JSON.stringify({ email: this.email }));
+ 
     // Ako login uspe, proveri da li korisnik već ima liste
     try {
       const lists = await this.firebase.getLists();

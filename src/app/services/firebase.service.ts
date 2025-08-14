@@ -62,7 +62,10 @@ export class FirebaseService {
     ]);
   }
 
-  // ==== ITEMS PO LISTI ====
+  getCurrentUser() {
+    return localStorage.getItem('user'); 
+  }
+
   async getItemsByList(listId: string) {
     const url = await this.buildUrl(`itemsByList/${listId}`);
     return this.http.get<Record<string, { name: string; qty?: number; purchased: boolean }> | null>(url).toPromise();

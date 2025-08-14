@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
@@ -11,5 +11,13 @@ import { IonicModule } from '@ionic/angular';
   templateUrl: './start.page.html',
   styleUrls: ['./start.page.scss'],
 })
-export class StartPage {}
+export class StartPage {
+  loginRequired = false;
+
+  constructor(private route: ActivatedRoute) {
+    this.route.queryParamMap.subscribe(params => {
+      this.loginRequired = params.has('loginRequired');
+    });
+  }
+}
 

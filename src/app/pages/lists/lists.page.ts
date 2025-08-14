@@ -150,7 +150,9 @@ export class ListsPage {
           try {
             const { getAuth, signOut } = await import('@angular/fire/auth');
             const auth = getAuth();
+            
             await signOut(auth);
+            localStorage.removeItem('user');
           } catch (e) {
             console.warn('Odjava (fallback):', e);
           } finally {
