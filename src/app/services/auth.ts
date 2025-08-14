@@ -1,55 +1,68 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import {
+  Auth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+} from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly USERS_KEY = 'users';
-  private readonly LOGGED_IN_KEY = 'loggedInUser';
+  private auth = inject(Auth);
 
-  // Registracija korisnika
-  register(email: string, password: string): boolean {
-    if (!this.validateEmail(email) || password.length < 6) {
-      return false; // email loš ili lozinka prekratka
-    }
-
-    let users = JSON.parse(localStorage.getItem(this.USERS_KEY) || '[]');
-
-    // Provera da li email već postoji
-    if (users.find((u: any) => u.email === email)) {
-      return false; // korisnik već postoji
-    }
-
-    users.push({ email, password });
-    localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
-    return true;
-  }
-
-  // Login
-  login(email: string, password: string): boolean {
-    let users = JSON.parse(localStorage.getItem(this.USERS_KEY) || '[]');
-    let user = users.find((u: any) => u.email === email && u.password === password);
-
-    if (user) {
-      localStorage.setItem(this.LOGGED_IN_KEY, JSON.stringify(user));
-      return true;
-    }
-    return false;
-  }
-
-  // Logout
-  logout() {
-    localStorage.removeItem(this.LOGGED_IN_KEY);
-  }
-
-  // Provera da li je korisnik ulogovan
-  isLoggedIn(): boolean {
-    return localStorage.getItem(this.LOGGED_IN_KEY) !== null;
-  }
-
-  // Provera ispravnosti email formata
+  // === VALIDACIJA EMAIL-a (zadržavamo tvoju proveru) ===
   private validateEmail(email: string): boolean {
     const re = /\S+@\S+\.\S+/;
     return re.test(email);
   }
+
+  // === REGISTRACIJA (Firebase Auth) ===
+  // Vraća true ako je prošlo, false ako nije (kao tvoja stara verzija), ali je sada ASINHRONO.
+  async register(email: string, password: string): Promise<boolean> {
+    if (!this.validateEmail(email) || password.length < 6) {
+      return false;
+    }
+    try {
+      await createUserWithEmailAndPassword(this.auth, email, password);
+      return true;
+    } catch {
+      // npr. ako email već postoji
+      return false;
+    }
+  }
+
+  // === LOGIN (Firebase Auth) ===
+  async login(email: string, password: string): Promise<boolean> {
+    try {
+      await signInWithEmailAndPassword(this.auth, email, password);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  // === LOGOUT ===
+  async logout(): Promise<void> {
+    await signOut(this.auth);
+  }
+
+  // === STATUS ===
+  isLoggedIn(): boolean {
+    return !!this.auth.currentUser;
+  }
+
+  // === Korisni dodaci za bazu (trebaće nam) ===
+  uid(): string | null {
+    return this.auth.currentUser?.uid ?? null;
+  }
+
+  /** Token za REST pozive ka Realtime DB: dodaje se kao ?auth=ID_TOKEN */
+  async idToken(): Promise<string> {
+    const u = this.auth.currentUser;
+    if (!u) throw new Error('Nema ulogovanog korisnika.');
+    return await u.getIdToken();
+  }
 }
+

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, AlertController } from '@ionic/angular';
+import { AuthService } from 'src/app/services/auth'; // NOVO
 
 @Component({
   selector: 'app-register',
@@ -16,7 +17,11 @@ export class RegisterPage {
   password = '';
   confirmPassword = '';
 
-  constructor(private router: Router, private alertCtrl: AlertController) {}
+  constructor(
+    private router: Router,
+    private alertCtrl: AlertController,
+    private auth: AuthService // NOVO
+  ) {}
 
   async register() {
     if (!this.email || !this.password || !this.confirmPassword) {
@@ -29,8 +34,11 @@ export class RegisterPage {
       return;
     }
 
-    const user = { email: this.email, password: this.password };
-    localStorage.setItem('user', JSON.stringify(user));
+    const ok = await this.auth.register(this.email, this.password); // Firebase Auth
+    if (!ok) {
+      await this.showAlert('Greška', 'Email je zauzet ili lozinka prekratka.');
+      return;
+    }
 
     await this.showAlert('Uspeh', 'Registracija uspešna. Možete se ulogovati.');
     this.router.navigate(['/start']);

@@ -1,101 +1,97 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { AuthService } from './auth';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseService {
   private http = inject(HttpClient);
-  private base = environment.firebaseDbUrl;
-  private path = 'users/demoUser/items';
+  private auth = inject(AuthService);
 
-  getItems() {
-    return this.http.get<Record<string, { name: string; qty?: number; purchased: boolean }> | null>(
-      `${this.base}/${this.path}.json`
-    );
+  private async buildUrl(path: string): Promise<string> {
+    const uid = this.auth.uid();
+    if (!uid) throw new Error('Korisnik nije ulogovan.');
+
+    const token = await this.auth.idToken();
+    return `${environment.firebaseDbUrl}/users/${uid}/${path}.json?auth=${token}`;
   }
 
-  addItem(name: string, qty?: number) {
-    return this.http.post<{ name: string }>(
-      `${this.base}/${this.path}.json`,
-      { name, qty: qty ?? undefined, purchased: false }
-    );
+  // ==== ITEMS (GLOBAL) ====
+  async getItems() {
+    const url = await this.buildUrl('items');
+    return this.http.get<Record<string, { name: string; qty?: number; purchased: boolean }> | null>(url).toPromise();
   }
 
-  togglePurchased(id: string, nextValue: boolean) {
-    return this.http.patch(`${this.base}/${this.path}/${id}.json`, { purchased: nextValue });
+  async addItem(name: string, qty?: number) {
+    const url = await this.buildUrl('items');
+    return this.http.post(url, { name, qty: qty ?? undefined, purchased: false }).toPromise();
   }
 
-  deleteItem(id: string) {
-    return this.http.delete(`${this.base}/${this.path}/${id}.json`);
+  async togglePurchased(id: string, nextValue: boolean) {
+    const url = await this.buildUrl(`items/${id}`);
+    return this.http.patch(url, { purchased: nextValue }).toPromise();
+  }
+
+  async deleteItem(id: string) {
+    const url = await this.buildUrl(`items/${id}`);
+    return this.http.delete(url).toPromise();
   }
 
   // ==== LISTE ====
-getLists() {
-  return this.http.get<Record<string, { name: string }> | null>(
-    `${this.base}/users/demoUser/lists.json`
-  );
-}
+  async getLists() {
+    const url = await this.buildUrl('lists');
+    return this.http.get<Record<string, { name: string }> | null>(url).toPromise();
+  }
 
-createList(name: string) {
-  return this.http.post<{ name: string }>(
-    `${this.base}/users/demoUser/lists.json`,
-    { name }
-  );
-}
+  async createList(name: string) {
+    const url = await this.buildUrl('lists');
+    return this.http.post(url, { name }).toPromise();
+  }
 
-// ==== ITEMS PO LISTI ====
-getItemsByList(listId: string) {
-  return this.http.get<Record<string, { name: string; qty?: number; purchased: boolean }> | null>(
-    `${this.base}/users/demoUser/itemsByList/${listId}.json`
-  );
-}
-addItemToList(listId: string, name: string, qty?: number) {
-  return this.http.post<{ name: string }>(
-    `${this.base}/users/demoUser/itemsByList/${listId}.json`,
-    { name, qty: qty ?? undefined, purchased: false }
-  );
-}
-togglePurchasedInList(listId: string, id: string, next: boolean) {
-  return this.http.patch(
-    `${this.base}/users/demoUser/itemsByList/${listId}/${id}.json`,
-    { purchased: next }
-  );
-}
-deleteItemInList(listId: string, id: string) {
-  return this.http.delete(
-    `${this.base}/users/demoUser/itemsByList/${listId}/${id}.json`
-  );
-}
+  async renameList(listId: string, newName: string) {
+    const url = await this.buildUrl(`lists/${listId}`);
+    return this.http.patch(url, { name: newName }).toPromise();
+  }
 
-// PREIMENUJ LISTU
-renameList(listId: string, newName: string) {
-  return this.http.patch(
-    `${this.base}/users/demoUser/lists/${listId}.json`,
-    { name: newName }
-  );
-}
+  async deleteListAndItems(listId: string) {
+    const urlList = await this.buildUrl(`lists/${listId}`);
+    const urlItems = await this.buildUrl(`itemsByList/${listId}`);
+    await Promise.all([
+      this.http.delete(urlList).toPromise(),
+      this.http.delete(urlItems).toPromise()
+    ]);
+  }
 
-// OBRIŠI LISTU + SVE NJENE STAVKE
-deleteListAndItems(listId: string) {
-  // obriši listu
-  const delList = this.http.delete(`${this.base}/users/demoUser/lists/${listId}.json`);
-  // obriši sve stavke iz te liste
-  const delItems = this.http.delete(`${this.base}/users/demoUser/itemsByList/${listId}.json`);
-  // najjednostavnije: pokreni oba poziva (frontend “fire & forget”)
-  return { delList, delItems };
-}
+  // ==== ITEMS PO LISTI ====
+  async getItemsByList(listId: string) {
+    const url = await this.buildUrl(`itemsByList/${listId}`);
+    return this.http.get<Record<string, { name: string; qty?: number; purchased: boolean }> | null>(url).toPromise();
+  }
 
-updateItemInList(listId: string, id: string, patch: { name?: string; qty?: number }) {
-  return this.http.patch(
-    `${this.base}/users/demoUser/itemsByList/${listId}/${id}.json`,
-    patch
-  );
-}
+  async addItemToList(listId: string, name: string, qty?: number) {
+    const url = await this.buildUrl(`itemsByList/${listId}`);
+    return this.http.post(url, { name, qty: qty ?? undefined, purchased: false }).toPromise();
+  }
 
-deletePurchasedInList(listId: string, ids: string[]) {
-  // paralelno brišemo više stavki
-  return Promise.all(ids.map(id =>
-    this.http.delete(`${this.base}/users/demoUser/itemsByList/${listId}/${id}.json`).toPromise()
-  ));
-}
+  async togglePurchasedInList(listId: string, id: string, next: boolean) {
+    const url = await this.buildUrl(`itemsByList/${listId}/${id}`);
+    return this.http.patch(url, { purchased: next }).toPromise();
+  }
+
+  async deleteItemInList(listId: string, id: string) {
+    const url = await this.buildUrl(`itemsByList/${listId}/${id}`);
+    return this.http.delete(url).toPromise();
+  }
+
+  async updateItemInList(listId: string, id: string, patch: { name?: string; qty?: number }) {
+    const url = await this.buildUrl(`itemsByList/${listId}/${id}`);
+    return this.http.patch(url, patch).toPromise();
+  }
+
+  async deletePurchasedInList(listId: string, ids: string[]) {
+    return Promise.all(ids.map(async id => {
+      const url = await this.buildUrl(`itemsByList/${listId}/${id}`);
+      return this.http.delete(url).toPromise();
+    }));
+  }
 }
