@@ -26,7 +26,7 @@ export class ListsPage {
     try {
       const res = await this.fb.getLists();
       this.lists = res
-        ? Object.entries(res).map(([id, v]) => ({ id, name: v.name }))
+        ? Object.entries(res).map(([id, v]) => ({ id, name: (v as any).name }))
         : [];
     } catch (err) {
       console.error(err);
@@ -49,7 +49,7 @@ export class ListsPage {
 
     try {
       const resp: any = await this.fb.createList(name);
-      const id = resp?.name;
+      const id = resp?.name; // RTDB: { name: "<generatedId>" }
       if (id) {
         this.lists = [{ id, name }, ...this.lists];
         this.newListName = '';
@@ -134,4 +134,38 @@ export class ListsPage {
     });
     await a.present();
   }
+
+    async logout() {
+  const alert = await this.alert.create({
+    header: 'Odjava',
+    message: 'Da li ste sigurni da zelite da se odjavite?',
+    buttons: [
+      {
+        text: 'Otkazi',
+        role: 'cancel'
+      },
+      {
+        text: 'Da, odjavi me',
+        handler: async () => {
+          try {
+            const { getAuth, signOut } = await import('@angular/fire/auth');
+            const auth = getAuth();
+            await signOut(auth);
+          } catch (e) {
+            console.warn('Odjava (fallback):', e);
+          } finally {
+            this.router.navigateByUrl('/start');
+            (await this.toast.create({
+              message: 'Odjava uspešna',
+              duration: 1200
+            })).present();
+          }
+        }
+      }
+    ]
+  });
+
+  await alert.present();
+}
+
 }
