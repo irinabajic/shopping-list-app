@@ -1,28 +1,47 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Moje liste</ion-title>
+  <ion-toolbar
+    style="--background: #f9efe4; --ion-color-base: transparent; --border-color: transparent; box-shadow: none;">
+    <ion-title style="color:#2b2b2b;">Moje liste</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="logout()">Odjava</ion-button>
+      <ion-button fill="clear" (click)="logout()" style="--color:#2b2b2b;">Odjava</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content class="ion-padding"
+  style="--background: none; background: linear-gradient(to bottom right, #ebd6bf, #fdfcfb);">
+
   <form (ngSubmit)="addList()">
-    <ion-item>
-      <ion-input [(ngModel)]="newListName" name="newListName" placeholder="Naziv liste"></ion-input>
+    <!-- INPUT: zaobljena “kartica”, bez donje linije i bele ploče -->
+    <ion-item lines="none"
+      style="--background: rgba(255,255,255,0.85); --border-radius: 16px; --padding-start: 14px; --inner-padding-end: 14px; --border-color: transparent; box-shadow: 0 6px 16px rgba(0,0,0,.08); margin: 10px 0;">
+      <ion-input [(ngModel)]="newListName" name="newListName" placeholder="Naziv liste"
+        style="--background: transparent; --padding-top: 10px; --padding-bottom: 10px; color:#2b2b2b;">
+      </ion-input>
     </ion-item>
-    <ion-button expand="block" type="submit">Dodaj listu</ion-button>
+
+    <ion-button expand="block" type="submit"
+      style="--background: #942222; --color: white; --border-radius: 20px;">
+      Dodaj listu
+    </ion-button>
   </form>
 
-  <ion-list>
-    <ion-item-sliding *ngFor="let l of lists">
-      <ion-item (click)="open(l)">
-        <ion-label>{{ l.name }}</ion-label>
+  <!-- LISTA: bez bele pozadine -->
+  <ion-list style="background: transparent;">
+    <ion-item-sliding *ngFor="let l of lists"
+      style="border-radius:16px; overflow:hidden; box-shadow:0 6px 16px rgba(0,0,0,.08); margin:10px 0;">
+      <!-- STAVKA: ista “kartica”, bez linije -->
+      <ion-item lines="none" button (click)="open(l)"
+        style="--background: rgba(255,255,255,0.85); --border-radius: 16px; --padding-start: 14px; --inner-padding-end: 14px; --border-color: transparent;">
+        <ion-label style="color:#2b2b2b; ">{{ l.name }}</ion-label>
       </ion-item>
-      <ion-item-options side="end">
-        <ion-item-option (click)="rename(l)">Preimenuj</ion-item-option>
-        <ion-item-option color="danger" (click)="remove(l)">Obriši</ion-item-option>
+      <ion-item-options side="end" style="background: transparent;">
+        <ion-item-option (click)="rename(l)" style="--background: rgba(0,0,0,0.08); --color:#2b2b2b; border-radius:12px; margin:6px;">
+          Preimenuj
+        </ion-item-option>
+        <ion-item-option color="danger" (click)="remove(l)" style="border-radius:12px; margin:6px;">
+          Obriši
+        </ion-item-option>
       </ion-item-options>
     </ion-item-sliding>
   </ion-list>

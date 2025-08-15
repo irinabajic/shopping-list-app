@@ -1,43 +1,74 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>{{ listName || 'Stavke' }}</ion-title>
+  <ion-toolbar
+    style="--background: #f9efe4; --ion-color-base: transparent; --border-color: transparent; box-shadow: none;">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/lists"></ion-back-button>
+      <ion-back-button defaultHref="/lists" style="--color:#2b2b2b;"></ion-back-button>
     </ion-buttons>
+    <ion-title style="color:#2b2b2b;">{{ listName || 'Stavke' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+
+<ion-content class="ion-padding"
+  style="--background: none; background: linear-gradient(to bottom right, #ebd6bf, #fdfcfb);">
+
   <form (ngSubmit)="addItem()">
-    <ion-item>
-      <ion-input [(ngModel)]="newItemName" name="newItemName" placeholder="Nova stavka"></ion-input>
+    <!-- Naziv stavke -->
+    <ion-item lines="none"
+      style="--background: rgba(255,255,255,0.85); --border-radius: 16px; --padding-start: 14px; --inner-padding-end: 14px; --border-color: transparent; box-shadow: 0 6px 16px rgba(0,0,0,.08); margin: 10px 0;">
+      <ion-input [(ngModel)]="newItemName" name="newItemName" placeholder="Nova stavka"
+        style="--background: transparent; --padding-top: 10px; --padding-bottom: 10px; color:#2b2b2b;">
+      </ion-input>
     </ion-item>
-    <ion-item>
-      <ion-input [(ngModel)]="newItemQty" name="newItemQty" type="number" placeholder="Količina (opciono)"></ion-input>
+
+    <!-- Količina -->
+    <ion-item lines="none"
+      style="--background: rgba(255,255,255,0.85); --border-radius: 16px; --padding-start: 14px; --inner-padding-end: 14px; --border-color: transparent; box-shadow: 0 6px 16px rgba(0,0,0,.08); margin: 10px 0;">
+      <ion-input [(ngModel)]="newItemQty" name="newItemQty" type="number" placeholder="Količina (opciono)"
+        style="--background: transparent; --padding-top: 10px; --padding-bottom: 10px; color:#2b2b2b;">
+      </ion-input>
     </ion-item>
-    <ion-button expand="block" type="submit">Dodaj stavku</ion-button>
+
+    <!-- Dugme dodaj -->
+    <ion-button expand="block" type="submit"
+      style="--background: #8e755c; --color: white; --border-radius: 20px;">
+      Dodaj stavku
+    </ion-button>
   </form>
 
-<ion-button expand="block" fill="outline" (click)="clearPurchased()">
-  Obriši sve kupljene
-</ion-button>
+  <!-- Dugme obriši kupljene -->
+  <ion-button expand="block" fill="outline" (click)="clearPurchased()"
+    style="--border-radius: 20px; margin-top: 10px; --color: #8e755c; --border-color: #8e755c;">
+    Obriši sve kupljene
+  </ion-button>
 
-  <ion-list>
-  <ion-item-sliding *ngFor="let it of items">
-    <ion-item>
-      <ion-label>
-        <h2 [style.textDecoration]="it.purchased ? 'line-through' : 'none'">
-          {{ it.name }} <ng-container *ngIf="it.qty">({{ it.qty }})</ng-container>
-        </h2>
-      </ion-label>
-      <ion-button fill="clear" (click)="togglePurchased(it)">
-        {{ it.purchased ? 'Vrati' : 'Kupljeno' }}
-      </ion-button>
-    </ion-item>
-    <ion-item-options side="end">
-      <ion-item-option (click)="edit(it)">Izmeni</ion-item-option>
-      <ion-item-option color="danger" (click)="removeItem(it)">Obriši</ion-item-option>
-    </ion-item-options>
-  </ion-item-sliding>
-</ion-list>
+  <!-- Lista stavki -->
+  <ion-list style="background: transparent;">
+    <ion-item-sliding *ngFor="let it of items"
+      style="border-radius:16px; overflow:hidden; box-shadow:0 6px 16px rgba(0,0,0,.08); margin:10px 0;">
+      <ion-item lines="none"
+        style="--background: rgba(255,255,255,0.85); --border-radius: 16px; --padding-start: 14px; --inner-padding-end: 14px; --border-color: transparent;">
+        <ion-label style="color:#2b2b2b; font-weight:600; font-size:1.1rem;">
+          <h2 [style.textDecoration]="it.purchased ? 'line-through' : 'none'">
+            {{ it.name }} <ng-container *ngIf="it.qty">({{ it.qty }})</ng-container>
+          </h2>
+        </ion-label>
+        <ion-button fill="clear" (click)="togglePurchased(it)">
+          {{ it.purchased ? 'Vrati' : 'Kupljeno' }}
+        </ion-button>
+      </ion-item>
+
+      <ion-item-options side="end">
+        <ion-item-option (click)="edit(it)"
+          style="--background: rgba(0,0,0,0.08); --color:#2b2b2b; border-radius:12px; margin:6px;">
+          Izmeni
+        </ion-item-option>
+        <ion-item-option color="danger" (click)="removeItem(it)"
+          style="border-radius:12px; margin:6px;">
+          Obriši
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
 </ion-content>
