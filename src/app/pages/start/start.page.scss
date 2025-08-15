@@ -1,8 +1,8 @@
 .start-page {
-  --background: none; /* isključujemo default Ionic background */
+  --background: none; 
 
-  /* Pozadina - gradijent */
-  background: linear-gradient(to bottom right, #a8dadc, #f1faee);
+   background: linear-gradient(to bottom right, #ebd6bf, #fdfcfb);
+//background: linear-gradient(to bottom right, #a8dadc, #f1faee);
   height: 100%;
   display: flex;
   justify-content: center;
@@ -19,7 +19,7 @@
 
   .logo-icon {
     font-size: 80px;
-    color: #1d3557;
+    color: #443c26;
     margin-bottom: 10px;
   }
 
@@ -29,7 +29,7 @@
   font-weight: 700;
   margin-bottom: 40px;
   text-align: center;
-  background: linear-gradient(90deg, #1e90ff, #00bfff);
+  background: linear-gradient(90deg, #62583d, #efbd80);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
@@ -53,10 +53,10 @@
   .register-link {
     font-size: 1rem;
     text-align: center;
-    color: #1d3557;
+    color: #0c182a;
 
     a {
-      color: #457b9d;
+      color: #62583d;
       font-weight: bold;
       text-decoration: none;
     }

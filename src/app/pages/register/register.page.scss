@@ -1,0 +1,36 @@
+ion-toolbar {
+  --background:#f8e7d7;
+  --ion-color-base: transparent !important;
+  --border-color: transparent;
+  box-shadow: none;
+}
+ion-header::after { display: none; } /* ukloni iOS hairline */
+ion-title { color: #2b2b2b; }        /* tamniji tekst naslova */
+ion-back-button { --color: #2b2b2b; }
+
+.field {
+  --background: rgba(255, 255, 255, 0.82);   /* nije 100% belo */
+  --border-radius: 16px;
+  --padding-start: 12px;
+  --inner-padding-end: 12px;
+  --border-color: rgba(0, 0, 0, 0.06);       /* suptilna ivica */
+  margin-bottom: 14px;
+}
+
+/* ukloni dodatno belo unutar inputa */
+.field ion-input {
+  --background: transparent;
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+}
+
+/* label malo tamnija da se čita na nude pozadini */
+.field ion-label {
+  color: #503d31;
+  margin-bottom: 6px;
+    font-size: 1.2rem; /* povećaj veličinu */
+  font-weight: 600;  /* malo deblja slova */
+}
+
+
+

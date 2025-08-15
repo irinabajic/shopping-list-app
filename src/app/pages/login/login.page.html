@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-       <ion-buttons slot="start">
+    <ion-buttons slot="start">
       <ion-back-button defaultHref="/start"></ion-back-button>
     </ion-buttons>
     <ion-title>Ulogujte se</ion-title>
@@ -8,17 +8,33 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-item>
-    <ion-label position="floating">Email</ion-label>
-    <ion-input type="email" [(ngModel)]="email"></ion-input>
-  </ion-item>
+  <form (ngSubmit)="login()">
+    <ion-item fill="outline" class="field">
+      <ion-label position="stacked">Email</ion-label>
+      <ion-input 
+        type="email" 
+        [(ngModel)]="email" 
+        name="email"
+        placeholder="Unesite email"
+        required>
+      </ion-input>
+    </ion-item>
 
-  <ion-item>
-    <ion-label position="floating">Lozinka</ion-label>
-    <ion-input type="password" [(ngModel)]="password"></ion-input>
-  </ion-item>
+    <ion-item fill="outline" class="field">
+      <ion-label position="stacked">Lozinka</ion-label>
+      <ion-input 
+        type="password" 
+        [(ngModel)]="password" 
+        name="password"
+        placeholder="Unesite lozinku"
+        required>
+      </ion-input>
+    </ion-item>
 
-  <ion-button expand="block" (click)="login()">Uloguj se</ion-button>
+    <ion-button expand="block" type="submit" style="--background: #8e755c; --color: white; --border-radius: 20px;">
+      Uloguj se
+    </ion-button>
+  </form>
 
   <div class="ion-text-center" style="margin-top: 1rem;">
     Nemate nalog? <a routerLink="/register">Registrujte se</a>
