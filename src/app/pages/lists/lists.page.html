@@ -12,7 +12,6 @@
   style="--background: none; background: linear-gradient(to bottom right, #ebd6bf, #fdfcfb);">
 
   <form (ngSubmit)="addList()">
-    <!-- INPUT: zaobljena “kartica”, bez donje linije i bele ploče -->
     <ion-item lines="none"
       style="--background: rgba(255,255,255,0.85); --border-radius: 16px; --padding-start: 14px; --inner-padding-end: 14px; --border-color: transparent; box-shadow: 0 6px 16px rgba(0,0,0,.08); margin: 10px 0;">
       <ion-input [(ngModel)]="newListName" name="newListName" placeholder="Naziv liste"
@@ -26,11 +25,11 @@
     </ion-button>
   </form>
 
-  <!-- LISTA: bez bele pozadine -->
+  
   <ion-list style="background: transparent;">
     <ion-item-sliding *ngFor="let l of lists"
       style="border-radius:16px; overflow:hidden; box-shadow:0 6px 16px rgba(0,0,0,.08); margin:10px 0;">
-      <!-- STAVKA: ista “kartica”, bez linije -->
+      
       <ion-item lines="none" button (click)="open(l)"
         style="--background: rgba(255,255,255,0.85); --border-radius: 16px; --padding-start: 14px; --inner-padding-end: 14px; --border-color: transparent;">
         <ion-label style="color:#2b2b2b; ">{{ l.name }}</ion-label>

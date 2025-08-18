@@ -17,7 +17,7 @@ export class AuthService {
   private currentUser: User | null = null;
 
   constructor() {
-    // sluša promene stanja
+    // slusa promene stanja
     onAuthStateChanged(this.auth, (user) => {
       this.currentUser = user;
     });
@@ -28,7 +28,7 @@ export class AuthService {
       return true;
     } catch (err: any) {
       console.error('Greška prilikom registracije:', err.code, err.message);
-      alert('Greška: ' + err.message); // privremeno za debug
+      alert('Greška: ' + err.message); 
       return false;
     }
   }

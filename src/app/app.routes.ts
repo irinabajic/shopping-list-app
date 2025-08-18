@@ -11,13 +11,13 @@ export const routes: Routes = [
     path: 'lists',
     loadComponent: () => import('./pages/lists/lists.page').then(m => m.ListsPage),
     canActivate: [AuthGuard],
-  canMatch: [AuthGuard]
+    canMatch: [AuthGuard]
   },
   {
     path: 'list/:id/:name',
     loadComponent: () => import('./pages/list-detail/list-detail.page').then(m => m.ListDetailPage),
     canActivate: [AuthGuard],
-  canMatch: [AuthGuard]
+    canMatch: [AuthGuard]
   },
   {
     path: 'login',

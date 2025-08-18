@@ -16,7 +16,7 @@ export class FirebaseService {
     return `${environment.firebaseDbUrl}/users/${uid}/${path}.json?auth=${token}`;
   }
 
-  // ==== ITEMS (GLOBAL) ====
+  // ITEMS (GLOBAL) 
   async getItems() {
     const url = await this.buildUrl('items');
     return this.http.get<Record<string, { name: string; qty?: number; purchased: boolean }> | null>(url).toPromise();
@@ -37,7 +37,7 @@ export class FirebaseService {
     return this.http.delete(url).toPromise();
   }
 
-  // ==== LISTE ====
+  //  LISTE 
   async getLists() {
     const url = await this.buildUrl('lists');
     return this.http.get<Record<string, { name: string }> | null>(url).toPromise();

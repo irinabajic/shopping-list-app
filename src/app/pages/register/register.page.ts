@@ -3,7 +3,7 @@ import { IonicModule, AlertController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/services/auth'; // ovde koristiš naziv fajla kod tebe
+import { AuthService } from 'src/app/services/auth'; 
 
 @Component({
   selector: 'app-register',
